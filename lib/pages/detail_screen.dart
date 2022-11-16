@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:showcaseview/showcaseview.dart';
+import 'package:provider/provider.dart';
+import 'package:weather_ui/providers/weather_provider.dart';
 
 class DetailScreen extends StatefulWidget {
   const DetailScreen({super.key});
@@ -11,19 +10,13 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
- 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   final GlobalKey _third = GlobalKey();
 
+  @override
+  
 
-   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => ShowCaseWidget.of(context)
-          .startShowCase([ _third, ]),  
-    );
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,112 +27,115 @@ class _DetailScreenState extends State<DetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              height: 370,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                    Color(0xff4F80FA),
-                    Color(0xff3764D7),
-                    Color(0xff335FD1)
-                  ])),
-              child: Column(
-                children: [
-                  Container(
-                    width: 343,
-                    height: 24,
-                    margin: EdgeInsets.only(top: 68),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context, true);
-                            },
-                            child: Image.asset("assets/chevron_left.png")),
-                        Text(
-                          "Tanjungsiang, Subang",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14),
-                        ),
-                        Image.asset("assets/more_horizontal.png")
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 240,
-                    height: 230,
-                    margin: EdgeInsets.only(top: 24),
-                    child: Column(
-                      //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Senin, 20 Desember 2021 - 3.30 PM",
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w400),
-                        ),
-                        Stack(
+            Consumer(
+              builder: (BuildContext context, HourlyWeatherProvider hourlyWeatherProvider, Widget? child) {
+                return Container(
+                  width: double.infinity,
+                  height: 370,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                        Color(0xff4F80FA),
+                        Color(0xff3764D7),
+                        Color(0xff335FD1)
+                      ])),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 343,
+                        height: 24,
+                        margin: EdgeInsets.only(top: 68),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Image.asset(
-                              "assets/1.png",
-                              fit: BoxFit.cover,
-                              scale: 0.8,
+                            GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context, true);
+                                },
+                                child: Image.asset("assets/chevron_left.png")),
+                            Text(
+                              "${hourlyWeatherProvider.hourlyWeatherResponse.city!.country}, ${hourlyWeatherProvider.hourlyWeatherResponse.city!.name}",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14),
                             ),
-                            Positioned(
-                              bottom: 0,
-                              left: 48,
+                            Image.asset("assets/more_horizontal.png")
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 240,
+                        height: 230,
+                        margin: EdgeInsets.only(top: 24),
+                        child: Column(
+                          //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${hourlyWeatherProvider.hourlyWeatherResponse.city!.name}, ${hourlyWeatherProvider.hourlyWeatherResponse.list![hourlyWeatherProvider.index!].dtTxt!.year} - ${hourlyWeatherProvider.hourlyWeatherResponse.list![hourlyWeatherProvider.index!].dtTxt!.month} - ${hourlyWeatherProvider.hourlyWeatherResponse.list![hourlyWeatherProvider.index!].dtTxt!.day} - ${hourlyWeatherProvider.hourlyWeatherResponse.list![hourlyWeatherProvider.index!].dtTxt!.hour} : ${hourlyWeatherProvider.hourlyWeatherResponse.list![hourlyWeatherProvider.index!].dtTxt!.minute}${hourlyWeatherProvider.hourlyWeatherResponse.list![hourlyWeatherProvider.index!].dtTxt!.second}",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            Stack(
+                              children: [
+                                Image.asset(
+                                  "assets/1.png",
+                                  fit: BoxFit.cover,
+                                  scale: 0.8,
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  left: 48,
+                                  child: Text(
+                                    "${hourlyWeatherProvider.hourlyWeatherResponse.list![hourlyWeatherProvider.index!].main!.temp}",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 4),
                               child: Text(
-                                "18º C",
+                                "${hourlyWeatherProvider.hourlyWeatherResponse.list![hourlyWeatherProvider.index!].weather![0].main.toString().split(".").last}",
                                 style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w400),
+                                    fontWeight: FontWeight.w600),
                               ),
                             ),
+                            Container(
+                              width: 172,
+                              height: 17,
+                              margin: EdgeInsets.only(top: 32),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Terakhir update 3.00 PM",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  Image.asset("assets/refresh.png")
+                                ],
+                              ),
+                            )
                           ],
                         ),
-                        Container(
-                          margin: EdgeInsets.only(top: 4),
-                          child: Text(
-                            "Hujan Berawan",
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        Container(
-                          width: 172,
-                          height: 17,
-                          margin: EdgeInsets.only(top: 32),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Terakhir update 3.00 PM",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                              Showcase(
-                                key: _third,
-                                description: "Refresh page",
-                                child: Image.asset("assets/refresh.png"))
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                      )
+                    ],
+                  ),
+                );
+              },
             ),
             Container(
               margin: EdgeInsets.only(top: 24, left: 20),
@@ -230,7 +226,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         ),
                         Center(
                           child: Container(
-                           // color: Colors.yellow,
+                            // color: Colors.yellow,
                             height: 67,
                             width: 67,
                             margin: EdgeInsets.only(left: 5),
@@ -247,7 +243,7 @@ class _DetailScreenState extends State<DetailScreen> {
                   ),
                   Container(
                     height: 85,
-                    margin: EdgeInsets.only(left: 15,top: 5),
+                    margin: EdgeInsets.only(left: 15, top: 5),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
