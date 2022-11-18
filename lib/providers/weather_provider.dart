@@ -11,9 +11,6 @@ class WeatherProvider extends ChangeNotifier {
     response = (await getCurrentData(context))!;
     notifyListeners();
   }
-
-  
-  
 }
 
 class HourlyWeatherProvider extends ChangeNotifier {
